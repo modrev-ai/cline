@@ -1,4 +1,4 @@
-# modrev-ai Deployment Strategy
+modrev-ai Deployment Strategy
 
 ## Overview
 This document outlines the git workflow for the modrev-ai fork of Cline, designed to maintain a clean separation between development, testing, and production while allowing controlled synchronization with the upstream Cline repository.
@@ -90,7 +90,7 @@ git push origin feature/your-feature-name
 ```bash
 # Push feature branch, create PR targeting dev
 git push origin feature/your-feature-name
-# Create PR on GitHub: feature/your-feature-name → dev
+# Create PR on GitHub: feature/your-feature-name -> dev
 # Review, approve, merge (squash or merge commit)
 # Delete feature branch after merge
 ```
@@ -116,12 +116,15 @@ git checkout main
 git pull origin main
 git merge dev --no-ff -m "release: vX.Y.Z from dev"
 
-# Tag the release
-git tag -a vX.Y.Z -m "Release vX.Y.Z"
+# Tag the release (modrev convention: upstream version + modrev suffix)
+git tag -a vX.Y.Z-modrev.N -m "Release vX.Y.Z-modrev.N"
 
 # Push main and tags
 git push origin main
 git push origin --tags
+
+# Create GitHub Release
+gh release create vX.Y.Z-modrev.N --title "vX.Y.Z-modrev.N" --notes "Modrev fork release based on Cline vX.Y.Z with modrev customizations."
 ```
 
 ### 4. Syncing with Upstream (Public Cline Updates)
@@ -203,19 +206,19 @@ git push origin --delete hotfix/critical-issue
 ## Branch Protection Rules (GitHub Settings)
 
 ### `main` Branch
-- ✅ Require pull request reviews before merging
-- ✅ Require status checks to pass (CI)
-- ✅ Require branches to be up to date before merging
-- ✅ Include administrators
-- ✅ Restrict pushes to matching branches only
-- ✅ Allow force pushes: **NO**
-- ✅ Allow deletions: **NO**
+- Require pull request reviews before merging
+- Require status checks to pass (CI)
+- Require branches to be up to date before merging
+- Include administrators
+- Restrict pushes to matching branches only
+- Allow force pushes: **NO**
+- Allow deletions: **NO**
 
 ### `dev` Branch
-- ✅ Require pull request reviews before merging (optional for solo)
-- ✅ Require status checks to pass (CI)
-- ✅ Allow force pushes: **NO**
-- ✅ Allow deletions: **NO**
+- Require pull request reviews before merging (optional for solo)
+- Require status checks to pass (CI)
+- Allow force pushes: **NO**
+- Allow deletions: **NO**
 
 ---
 
@@ -226,13 +229,12 @@ git push origin --delete hotfix/critical-issue
 - **MINOR**: New features, backward compatible
 - **PATCH**: Bug fixes, backward compatible
 
-### Tag Format
+### Tag Format (modrev convention)
 ```
-v<MAJOR>.<MINOR>.<PATCH>
-v1.0.0    # Initial production release
-v1.1.0    # New features from dev
-v1.1.1    # Hotfix
-v2.0.0    # Breaking changes
+v<MAJOR>.<MINOR>.<PATCH>-modrev.<N>
+v4.1.3-modrev.1    # First modrev release based on upstream v4.1.3
+v4.1.3-modrev.2    # Second modrev release (same upstream base)
+v4.2.0-modrev.1    # New upstream minor version
 ```
 
 ### Release Notes
@@ -304,7 +306,7 @@ git push origin main
 |--------|---------|
 | Start new feature | `git checkout dev && git pull && git checkout -b feature/xyz` |
 | Finish feature | `git checkout dev && git pull && git merge feature/xyz && git push` |
-| Release to prod | `git checkout main && git merge dev --no-ff && git tag vX.Y.Z && git push origin main --tags` |
+| Release to prod | `git checkout main && git merge dev --no-ff && git tag vX.Y.Z-modrev.N && git push origin main --tags` |
 | Sync upstream | `git fetch upstream && git checkout main && git merge upstream/main && git push && git checkout dev && git merge main && git push` |
 | Hotfix | `git checkout main && git checkout -b hotfix/xyz && ...fix... && git checkout main && git merge hotfix/xyz && git checkout dev && git merge hotfix/xyz` |
 | View branches | `git branch -a` |
@@ -321,6 +323,17 @@ git push origin main
 5. **Test on `dev` before merging to `main`** - `dev` is your staging ground
 6. **Document modrev-specific customizations** - Keep a `MODREV_CUSTOMIZATIONS.md` to track what differs from upstream
 7. **Automate where possible** - Use GitHub Actions for CI, release automation, and upstream sync scheduling
+
+---
+
+## Release History
+
+### v4.1.3-modrev.1 (2026-08-04)
+- **Base**: Upstream Cline v4.1.3 (commit 2a0dd197b)
+- **Changes**: Added MODREV_DEPLOYMENT_STRATEGY.md with git workflow documentation
+- **PR**: #3 (dev → main)
+- **Tag**: v4.1.3-modrev.1
+- **GitHub Release**: https://github.com/modrev-ai/cline/releases/tag/v4.1.3-modrev.1
 
 ---
 
