@@ -1,0 +1,35 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cline
+  description: The modrev-ai fork of Cline, the open source coding agent for the IDE and terminal, kept in sync with upstream and released under a modrev version tag.
+  tags: [typescript, bun, node, vscode]
+  annotations:
+    modrev.ai/build: "bun run build"
+    modrev.ai/run: "bun run dev"
+  links:
+    - url: README.md
+    - url: MODREV_DEPLOYMENT_STRATEGY.md
+    - url: sdk/ARCHITECTURE.md
+    - url: docs/cline-overview.mdx
+spec:
+  type: tool
+  lifecycle: production
+  owner: unassigned
+  features:
+    - Edits code across a project with diffs to review and checkpoints to undo the agent's work
+    - Runs terminal commands and reacts to their output, long-running dev servers included
+    - Plan mode and Act mode, with approval on every edit and command unless auto-approve is on
+    - Reads project rules from .clinerules and loads skills when needed
+    - Works with any provider, from Anthropic, OpenAI and OpenRouter to local Ollama and LM Studio models
+    - Extends through SDK plugins and MCP servers, managed in the CLI with cline mcp
+    - Runs multi-agent teams and scheduled agents on cron schedules
+    - Fork releases are tagged vX.Y.Z-modrev.N, built on dev and merged to main
+  subcomponents:
+    - sdk/ - the agent engine and the @cline/sdk packages
+    - apps/cli/ - the terminal UI and headless CLI
+    - apps/vscode/ and apps/vscode-rollout/ - the VS Code extension
+    - apps/cline-hub/ - the hub app and its webview
+    - apps/examples/ - SDK usage examples
+    - docs/ - the documentation site
+    - evals/ - the evaluation suites
